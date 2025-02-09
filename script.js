@@ -97,3 +97,17 @@ document.querySelector("#sel #spms").addEventListener("click", function() {
     document.querySelector("#core>#ret").setAttribute("class", "empty")
     notation = notList.spms
 })
+document.querySelector("#sel #sudden").addEventListener("click", function() {
+    for (let child of document.querySelector("#sel").children) child.setAttribute("class", "empty")
+    this.setAttribute("class", "clicked")
+    document.querySelector("#core>.indent").innerHTML = ""
+    document.querySelector("#core>#ret").setAttribute("class", "empty")
+    notation = notList.sudden
+})
+document.querySelector("#sel #dbms").addEventListener("click", function() {
+    for (let child of document.querySelector("#sel").children) child.setAttribute("class", "empty")
+    this.setAttribute("class", "clicked")
+    document.querySelector("#core>.indent").innerHTML = ""
+    document.querySelector("#core>#ret").setAttribute("class", "empty")
+    notation = notList.dbms
+})

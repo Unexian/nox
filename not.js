@@ -114,15 +114,118 @@ let notList = {
                 if (i >= s2.length) return false
                 for (let j = 0; j < s1[i].length; j ++) {
                     if (j >= s2[i].length) return false
-                    if (s1[i][j] != (s2[i][j] || 0)) {
+                    if (s1[i][j] != (s2[i][j]??0)) {
                         if (s1[i][j] == 0) return true
-                        if ((s2[i][j] || 0) == 0) return false
-                        return s1[i][j] > (s2[i][j] || 0)
+                        if ((s2[i][j]??0) == 0) return false
+                        return s1[i][j] > (s2[i][j]??0)
                     }
                 }
                 if (s1[i].length != s2[i].length) return true
             }
             return s1.length != s2.length
+        }
+    },
+    sudden: {
+        getBR: function(seq) {
+            let z = seq.findLastIndex(k => k < seq.at(-1))
+            let first = seq.slice(z).map(x => x-seq[z])
+            let out
+            while (true) {
+                let pre = seq.slice(z).map(x => x-seq[z])
+                if (this.lessNano(pre, first)) break
+                z = seq.slice(0, z).findLastIndex(k => k <= seq[z])
+                out = pre
+            }
+            return seq.length - out.length
+        },
+        lessNano: function(s1, s2) {
+            for (let i = 0; i < s1.length; i ++) {
+                if (i >= s2.length) return false
+                if (s1[i] != s2[i]) return s1[i] < s2[i]
+            }
+            return s1.length != s2.length
+        },
+        expandLimit: ind => '0 0 ' + (1+ind),
+        expand: function(seq, ind) {
+            seq = seq.split(' ').map(Number)
+            let br = this.getBR(seq)
+            let good = seq.slice(0, br)
+            let bad = seq.slice(br, -1)
+            let delta = seq.at(-1) - seq[br] - 1
+            for (let i = 0; i < ind; i ++) {
+                good = good.concat(bad.map(z => z+i*delta))
+            }
+            if (good.length < 2) return '0'
+            if (good.at(-1) > 0) return good.join(' ')
+            return good.slice(0,-1).join(' ')
+        },
+        canExpand: seq => seq.length > 0 && seq.split(' ').at(-1) != "0",
+        less: function(seq1, seq2) {
+            let s1 = seq1.split(' ').map(Number)
+            let s2 = seq2.split(' ').map(Number)
+            return this.lessNano(s1, s2)
+        }
+    },
+    dbms: {
+        getParent(mat, c, r) {
+            if (r < 0.5) return mat.map(c => c[0]).slice(0,c).findLastIndex(x => x < mat[c][0])
+            let cp = c
+            while (true) {
+                cp = this.getParent(mat, cp, r-1)
+                if ((mat[cp][r]??0) < mat[c][r]) return cp
+            }
+        },
+        expandLimit: function(ind) {
+            let out = [[0]]
+            for (let i = 1; i <= ind; i ++) {
+                let push = []
+                for (let j = i; j > 0; j --) {
+                    push.push(j)
+                }
+                out.push(push)
+            }
+            return '(' + out.map(c => c.join(',')).join(')(') + ')'
+        },
+        expand: function(mat, ind) {
+            mat = mat.slice(1,-1).split(')(').map(c => c.split(',').map(Number))
+            let lnz = mat.at(-1).concat(0).indexOf(0) - 1
+            let br = this.getParent(mat, mat.length-1, lnz)
+            let good = mat.slice(0, br)
+            let bad = mat.slice(br, -1)
+            let delta = mat.at(-1).map((e,r) => e-(bad[0][r]??0))
+            delta[lnz] --
+            let mask = []
+            for (let c = 0; c < bad.length; c ++) {
+                let mcol = []
+                for (let r = 0; r < bad[c].length; r ++) {
+                    if (r >= lnz+1) {
+                        mcol.push(false)
+                        continue
+                    }
+                    let cp = c
+                    while (cp > 0) cp = this.getParent(bad, cp, r)
+                    mcol.push(cp == 0)
+                }
+                mask.push(mcol)
+            }
+            for (let i = 0; i < ind; i ++) {
+                good = good.concat(bad.map((c,ci) => c.map((e,ri) => e+(delta[ri]??0)*mask[ci][ri]*i)))
+            }
+            return '(' + good.map(c=>c.join(',')).join(')(').replaceAll(',0','') + ')'
+        },
+        canExpand: mat => mat.length > 0 && mat.slice(-3) != '(0)',
+        less: function(mat1, mat2) {
+            mat1 = mat1.slice(1,-1).split(')(').map(c => c.split(',').map(Number))
+            mat2 = mat2.slice(1,-1).split(')(').map(c => c.split(',').map(Number))
+            for (let c = 0; c < mat1.length; c ++) {
+                if (c >= mat2.length) return false
+                for (let r = 0; r < mat1[c].length; r ++) {
+                    if (r >= mat2[c].length && mat1[c][r] > 0) return false
+                    if (mat1[c][r] != (mat2[c][r]??0)) return mat1[c][r] < (mat2[c][r]??0)
+                }
+                if (mat2[c][mat1[c].length] > 0) return true
+            }
+            return mat1.length != mat2.length
         }
     }
 }
