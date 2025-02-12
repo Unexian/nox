@@ -4,11 +4,14 @@
         <title>NOX</title>
         <link rel="icon" href="ifinity.png" type="image/x-icon">
         <style>
-            html, html * {
+            * {
                 background-color: #012;
                 color: white;
             }
             #template, #template * { display: none; }
+            h1 {
+                margin-bottom: 0.2em;
+            }
             .indent {
                 margin-left: 5px;
                 border-left: 1px solid #ccc;
@@ -47,13 +50,14 @@
     </head>
     <body>
         <h1>NOX - Nif's Ordinal Explorer</h1>
+        <noscript>JS is kinda required for this type of site... Sorry!</noscript><br>
         <div id="sel">
-            <button class="clicked" id="lprss">LPrSS</button>
-            <button class="empty" id="tilde">Tilde not.</button>
-            <button class="empty" id="pair">Pair Seq.</button>
-            <button class="empty" id="spms">Strong Ptr</button>
+            <button class="clicked" id="lprss">Large Prim.</button>
+            <button class="empty" id="bms">Bashicu Mat.</button>
             <button class="empty" id="sudden">Sudden Seq.</button>
             <button class="empty" id="dbms">Diag. BMS</button>
+            <button class="empty" id="spms">Strong Ptr.</button>
+            <button class="empty" id="tilde">Tilde not.</button>
         </div><br>
         <form id="search">
             <input type="search" id="qry">

@@ -38,7 +38,6 @@ function expand(par) {
                 break
             } else if (i == 99) {
                 console.error("Could not find valid expansion :[")
-
                 par.querySelector(".name").setAttribute("class", "name halt")
                 return
     }   }   }
@@ -53,61 +52,33 @@ function expand(par) {
     return temp
 }
 
-document.querySelector("#core .name").addEventListener("click", function() { expand(document.querySelector("#core")) })
-document.querySelector("#core #ret").addEventListener("click", function() { retract(document.querySelector("#core")) })
-document.querySelector("#search").addEventListener("submit", function(e) {
-    e.preventDefault()
+function search(search) {
     document.querySelector("#core>.indent").innerHTML = ""
     document.querySelector("#core>#ret").setAttribute("class", "empty")
-    let search = document.querySelector("#search>#qry").value
     let next = document.querySelector("#core")
     do {
         let curr = undefined
         do { curr = expand(next) } while (notation.less(curr.querySelector(".name").innerText, search))
         next = curr
     } while (notation.canExpand(next.querySelector(".name").innerText) && next.querySelector(".name").innerText != search)
+}
+document.querySelector("#core .name").addEventListener("click", function() { expand(document.querySelector("#core")) })
+document.querySelector("#core #ret").addEventListener("click", function() { retract(document.querySelector("#core")) })
+document.querySelector("#search").addEventListener("submit", function(e) {
+    e.preventDefault()
+    search(document.querySelector("#search>#qry").value)
 })
 document.querySelector("#search>#clr").addEventListener("click", function() { document.querySelector("#search>#qry").value = "" })
 
-document.querySelector("#sel #lprss").addEventListener("click", function() {
+function setNot(n) {
     for (let child of document.querySelector("#sel").children) child.setAttribute("class", "empty")
-    this.setAttribute("class", "clicked")
+        document.querySelector("#sel #" + n).setAttribute("class", "clicked")
     document.querySelector("#core>.indent").innerHTML = ""
     document.querySelector("#core>#ret").setAttribute("class", "empty")
-    notation = notList.lprss
-})
-document.querySelector("#sel #tilde").addEventListener("click", function() {
-    for (let child of document.querySelector("#sel").children) child.setAttribute("class", "empty")
-    this.setAttribute("class", "clicked")
-    document.querySelector("#core>.indent").innerHTML = ""
-    document.querySelector("#core>#ret").setAttribute("class", "empty")
-    notation = notList.tilde
-})
-document.querySelector("#sel #pair").addEventListener("click", function() {
-    for (let child of document.querySelector("#sel").children) child.setAttribute("class", "empty")
-    this.setAttribute("class", "clicked")
-    document.querySelector("#core>.indent").innerHTML = ""
-    document.querySelector("#core>#ret").setAttribute("class", "empty")
-    notation = notList.pair
-})
-document.querySelector("#sel #spms").addEventListener("click", function() {
-    for (let child of document.querySelector("#sel").children) child.setAttribute("class", "empty")
-    this.setAttribute("class", "clicked")
-    document.querySelector("#core>.indent").innerHTML = ""
-    document.querySelector("#core>#ret").setAttribute("class", "empty")
-    notation = notList.spms
-})
-document.querySelector("#sel #sudden").addEventListener("click", function() {
-    for (let child of document.querySelector("#sel").children) child.setAttribute("class", "empty")
-    this.setAttribute("class", "clicked")
-    document.querySelector("#core>.indent").innerHTML = ""
-    document.querySelector("#core>#ret").setAttribute("class", "empty")
-    notation = notList.sudden
-})
-document.querySelector("#sel #dbms").addEventListener("click", function() {
-    for (let child of document.querySelector("#sel").children) child.setAttribute("class", "empty")
-    this.setAttribute("class", "clicked")
-    document.querySelector("#core>.indent").innerHTML = ""
-    document.querySelector("#core>#ret").setAttribute("class", "empty")
-    notation = notList.dbms
-})
+    notation = notList[n]
+}
+for (let not in notList) document.querySelector("#sel #" + not).addEventListener("click", function() { setNot(not) })
+
+let up = new URL(document.location).searchParams
+if (up.get("not") in notList) setNot(up.get("not"))
+if (up.has("not") && up.get("ord")) search(up.get("ord"))
