@@ -17,7 +17,8 @@ let notation = notList.lprss = {
         let par = ss.findLastIndex(x => x<cut)
         let diff = cut - ss[par] - 1
         let good = ss.slice(0, par)
-        for (let i = 0; i <= index; i ++) good = good.concat(ss.slice(par, -1).map(x => x + diff * i))
+        for (let i = 0; i <= index; i ++)
+            good = good.concat(ss.slice(par, -1).map(x => x + diff * i))
         return good.join(' ')
     },
     canExpand: seq => seq != '0' && seq.slice(-2) != ' 0',
@@ -41,7 +42,8 @@ notList.tilde = {
     expandLimit: index => '~<' + '<'.repeat(index) + '>'.repeat(index+1),
     expand: function(seq, index) {
         let z = seq.length
-        do { left = this.search(seq, --z) } while (z >= 0 && left != z - 1 && !this.isCountable(seq.slice(left + 1, z)))
+        do { left = this.search(seq, --z) }
+        while (z >= 0 && left != z - 1 && !this.isCountable(seq.slice(left + 1, z)))
         if (left == z - 1) {
             let a = z - 1
             while (a >= 0 && seq[a] != '~') {
@@ -49,14 +51,16 @@ notList.tilde = {
                 a --
             }
             let nest = seq.slice(a, left) + seq.slice(z + 1)
-            for (let i = 1; i < index; i ++) nest = seq.slice(a, left) + nest + seq.slice(z + 1)
+            for (let i = 1; i < index; i ++)
+                nest = seq.slice(a, left) + nest + seq.slice(z + 1)
             return seq.slice(0, a) + nest
         }
         if (seq.slice(z-3, z) == '~<>') {
             rep = seq.slice(left, z - 3) + '>'
             return seq.slice(0, left) + rep.repeat(index+1) + seq.slice(z+1)
         }
-        return seq.slice(0, left+1) + this.expand(seq.slice(left+1,z), index) + seq.slice(z)
+        return seq.slice(0, left+1) +
+            this.expand(seq.slice(left+1,z), index) + seq.slice(z)
     },
     canExpand: seq => seq.length > 0 && seq.slice(-3) != '~<>',
     less: function(seq1, seq2) {
@@ -70,7 +74,7 @@ notList.tilde = {
 }
 notList.bms = {
     getParent(mat, c, r) {
-        if (r < 0.5) return mat.map(c => c[0]).slice(0,c).findLastIndex(x => x < mat[c][0])
+        if (!r) return mat.map(c => c[0]).slice(0,c).findLastIndex(x => x < mat[c][0])
         let cp = c
         while (true) {
             cp = this.getParent(mat, cp, r-1)
@@ -83,7 +87,8 @@ notList.bms = {
         let lnz = mat.at(-1).concat(0).indexOf(0) - 1
         let br = this.getParent(mat, mat.length-1, lnz)
         let good = mat.slice(0, br)
-        let bad = mat.slice(br, -1).map(r => r.concat(new Array(mat.at(-1).length).fill(0)))
+        let bad = mat.slice(br, -1).map(r =>
+            r.concat(new Array(mat.at(-1).length).fill(0)))
         let delta = mat.at(-1).map((e,r) => e-(bad[0][r]??0))
         delta[lnz] --
         let mask = []
@@ -100,7 +105,8 @@ notList.bms = {
             }
             mask.push(mcol)
         }
-        for (let i = 0; i < ind; i ++) good = good.concat(bad.map((c,ci) => c.map((e,ri) => e+(delta[ri]??0)*mask[ci][ri]*i)))
+        for (let i = 0; i < ind; i ++) good = good.concat(bad.map((c,ci) =>
+            c.map((e,ri) => e+(delta[ri]??0)*mask[ci][ri]*i)))
         if (good.length == 0) return '(0)'
         return '(' + good.map(c=>c.join(',')).join(')(').replaceAll(',0','') + ')'
     },
@@ -120,20 +126,24 @@ notList.bms = {
     }
 }
 notList.spms = {
-    unwrap: seq => seq.replaceAll(',0','').slice(1,-1).split(')(').map(c => c.split(',').map(Number)),
+    unwrap: seq => seq.replaceAll(',0','').slice(1,-1)
+        .split(')(').map(c => c.split(',').map(Number)),
     wrap: mat => '(' + mat.map(c => c.join(',')).join(')(').replaceAll(',0','') + ')',
     expandLimit: ind => '(0)(1' + ',1'.repeat(ind) + ')',
     expand: function(seq, ind) {
         seq = this.unwrap(seq)
         let li = seq.at(-1).findLastIndex(k => k > 0)
         let l = seq.at(-1)[li]
-        seq.at(-1).splice(li, Infinity, ...seq.at(-1-l).slice(li).map(z => z + (z!=0)*l))
+        seq.at(-1).splice(li, Infinity, ...seq.at(-1-l)
+            .slice(li).map(z => z + (z!=0)*l))
         let ri = seq.slice(0,-l).findLastIndex(c => c[li] != 1)
         let bad = seq.slice(ri+1)
-        for (let i = 1; i <= ind; i ++) seq = seq.concat(bad.map(c => c.map((e,k) => e + l*i*(e<k))))
+        for (let i = 1; i <= ind; i ++)
+            seq = seq.concat(bad.map(c => c.map((e,k) => e + l*i*(e<k))))
         return this.wrap(seq.slice(0,-1))
     },
-    canExpand: function (seq) { return seq.length > 0 && this.unwrap(seq).at(-1)[0] != 0 },
+    canExpand: function (seq) {
+        return seq.length > 0 && this.unwrap(seq).at(-1)[0] != 0 },
     less: function(seq1, seq2) {
         let s1 = this.unwrap(seq1)
         let s2 = this.unwrap(seq2)
@@ -203,5 +213,5 @@ notList.dbms = {
             out.push(push)
         }
         return '(' + out.map(c => c.join(',')).join(')(') + ')'
-    },
+    }
 }

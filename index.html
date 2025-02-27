@@ -17,7 +17,7 @@
                 border-left: 1px solid #ccc;
                 padding-left: 5px
             }
-            input {
+            input, textarea {
                 background-color: #245;
                 border-color: #57a;
             }
@@ -41,6 +41,7 @@
                 background-color: #0000;
                 border: 0px solid #0000
             }
+            .hidden { display: none; }
         </style>
         <div id="template">
             <button id="ret" class="empty">-</button>
@@ -55,19 +56,25 @@
             <button class="clicked" id="lprss">Large Prim.</button>
             <button class="empty" id="bms">Bashicu Mat.</button>
             <button class="empty" id="sudden">Sudden Seq.</button>
-            <button class="empty" id="dbms">Diag. BMS</button>
+            <button class="empty" id="dbms">Diag. BMS</button><br>
             <button class="empty" id="spms">Strong Ptr.</button>
             <button class="empty" id="tilde">Tilde not.</button>
+            <button class="empty" id="custom">Custom</button>
+            <button class="empty" id="edit">Edit Custom</button>
         </div><br>
-        <form id="search">
-            <input type="search" id="qry">
-            <input type="button" class="empty" value="X" id="clr">
-            <input type="submit" class="empty" value="&telrec;" id="sbm">
-        </form><br>
         <div id="core">
+            <form id="search">
+                <input type="search" id="qry">
+                <input type="button" class="empty" value="X" id="clr">
+                <input type="submit" class="empty" value="&telrec;" id="sbm">
+            </form><br>
             <button id="ret" class="empty">-</button>
             <button class="name">Limit of notation</button>
             <div class="indent"></div>
+        </div>
+        <div id="program" class="hidden">
+            <textarea rows="20" cols="70"></textarea><br>
+            <button class="empty">Update to URL</button>
         </div>
     </body>
     <script src="not.js"></script>
