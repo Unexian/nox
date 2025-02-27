@@ -118,8 +118,8 @@ document.querySelector("#program textarea").value = [
     "}"
 ].join('\n')
 document.querySelector("#program button").addEventListener("click", function() {
-    let encoded = encodeURI(document.querySelector("#program textarea").value)
-    window.history.replaceState(null, "", "?cust=" + encodeURI(encoded))
+    let encoded = encodeURIComponent(encodeURIComponent(document.querySelector("#program textarea").value))
+    window.history.replaceState(null, "", "?cust=" + encoded)
     this.setAttribute("class", "clicked")
     setTimeout(() => {
         document.querySelector("#program button").setAttribute("class", "empty")
@@ -129,7 +129,7 @@ document.querySelector("#program button").addEventListener("click", function() {
 let up = new URL(document.location).searchParams
 if (up.has("not") && up.get("not") in notList) setNot(up.get("not"))
 if (up.has("cust") && up.get("cust")) {
-    document.querySelector("#program textarea").value = decodeURI(up.get("cust"))
+    document.querySelector("#program textarea").value = decodeURIComponent(decodeURIComponent(up.get("cust")))
     for (let child of document.querySelector("#sel").children) child.setAttribute("class", "empty")
     document.querySelector("#sel #edit").setAttribute("class", "clicked")
     document.querySelector("#core").setAttribute("class", "hidden")
